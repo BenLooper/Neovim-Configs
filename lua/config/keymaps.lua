@@ -18,3 +18,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.hl.on_yank()
   end,
 })
+
+-- LSP
+vim.keymap.set('n', 'gl', function() vim.diagnostic.open_float() end, 
+  { desc = 'Open diagnostics in float' }
+)
