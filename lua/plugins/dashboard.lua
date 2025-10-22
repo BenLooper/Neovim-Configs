@@ -8,7 +8,7 @@ return {
       disable_move = true,      -- default is false disable move keymap for hyper
       -- shortcut_type = 'letter',     -- shortcut type 'letter' or 'number'
       config = {
-        header = ascii_art.spookyCat,
+        header = ascii_art.hobbitHole,
         center = {
           {
             icon = '',
