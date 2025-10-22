@@ -96,7 +96,21 @@ return {
             function()
                 require("fzf-lua").lgrep_curbuf()
             end,
-            desc = "[/] Live grep the current buffer",
+            desc = "[./] Live grep the current buffer",
         },
+        {
+            "<leader>../",
+            function()
+                require("fzf-lua").live_grep({ cwd=vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p:h") })
+            end,
+            desc = "[../] Live grep parent directory of current buffer"
+        },
+        {
+            "<leader>.../",
+            function()
+                require("fzf-lua").live_grep({ cwd=vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p:h:h") })
+            end,
+            desc = "[../../] Live grep grandparent directory of current buffer"
+        }
     }
 }
