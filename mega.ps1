@@ -26,6 +26,10 @@ function fg {
 }
 
 #Navigation
+function ch {
+    cd $HOME
+}
+
 function nh {
     Set-Location "C:\Users\blooper\AppData\Local\nvim"
 }
