@@ -8,6 +8,10 @@ Set-PSReadLineOption -Colors @{
 }
 
 #Utility
+function la {
+    Get-ChildItem -Force @args
+}
+
 function fg {
     param(
         [string]$query
