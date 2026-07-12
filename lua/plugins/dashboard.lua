@@ -7,24 +7,24 @@ return {
 		"nvimdev/dashboard-nvim",
 		event = "VimEnter",
 		config = function()
-			local splash = require("milli").load({ splash = "lights" })
+			local splash = require("milli").load({ splash = "blackhole" })
 			require("dashboard").setup({
 				theme = "doom",
 				disable_move = true,
 				config = {
 					header = splash.frames[1],
 					center = {
-{
-						icon = "󰙅 ",
-						icon_hl = "Title",
-						desc = "File Explorer",
-						desc_hl = "String",
-						key = "e",
-						keymap = "SPC e",
-						key_hl = "Number",
-						key_format = " %s",
-						action = "Oil --preview --float",
-					},
+						{
+							icon = "󰙅 ",
+							icon_hl = "Title",
+							desc = "File Explorer",
+							desc_hl = "String",
+							key = "e",
+							keymap = "SPC e",
+							key_hl = "Number",
+							key_format = " %s",
+							action = "Oil --preview --float",
+						},
 						{
 							icon = "󰋙 ",
 							icon_hl = "Title",
@@ -52,7 +52,7 @@ return {
 							icon_hl = "Title",
 							desc = "Session Picker",
 							desc_hl = "String",
-							key = "p",
+							key = "s",
 							keymap = "SPC f s",
 							key_hl = "Number",
 							key_format = " %s",
@@ -63,7 +63,7 @@ return {
 							icon_hl = "Title",
 							desc = "Restore Session",
 							desc_hl = "String",
-							key = "s",
+							key = "r",
 							keymap = "SPC q s",
 							key_hl = "Number",
 							key_format = " %s",
@@ -74,7 +74,7 @@ return {
 					vertical_center = false,
 				},
 			})
-			require("milli").dashboard({ splash = "lights", loop = true })
+			require("milli").dashboard({ splash = "blackhole", loop = true })
 			vim.api.nvim_create_user_command("PersistenceSelect", function()
 				require("persistence").select()
 			end, {})
