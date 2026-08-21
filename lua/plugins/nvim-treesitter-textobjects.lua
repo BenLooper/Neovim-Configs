@@ -1,103 +1,90 @@
 return {
-	"nvim-treesitter/nvim-treesitter-textobjects",
-	dependencies = {
-		"nvim-treesitter/nvim-treesitter",
-	},
-	init = function()
-		local config = require("nvim-treesitter.config")
-		config.setup({
-			textobjects = {
-				select = {
-					enable = true,
+  "nvim-treesitter/nvim-treesitter-textobjects",
+  branch = "main",
+  dependencies = { "nvim-treesitter/nvim-treesitter" },
+  init = function()
+    -- Avoid conflicts with 0.12 built-in ftplugin textobject maps.
+    vim.g.no_plugin_maps = true
+  end,
+  config = function()
+    require("nvim-treesitter-textobjects").setup({
+      select = {
+        enable = true,
+        lookahead = true,
+        selection_modes = {
+          ["@parameter.outer"] = "v",
+          ["@function.outer"] = "V",
+          ["@class.outer"] = "<c-v>",
+        },
+        include_surrounding_whitespace = true,
+      },
+      move = {
+        enable = true,
+        set_jumps = true,
+      },
+    })
 
-					-- Automatically jump forward to textobj, similar to targets.vim
-					lookahead = true,
+    local select = require "nvim-treesitter-textobjects.select"
+    local move = require "nvim-treesitter-textobjects.move"
+    local swap = require "nvim-treesitter-textobjects.swap"
 
-					keymaps = {
-						-- You can use the capture groups defined in textobjects.scm
-						["af"] = "@function.outer",
-						["if"] = "@function.inner",
-						["ac"] = "@class.outer",
-						["ao"] = "@comment.outer",
-						-- You can optionally set descriptions to the mappings (used in the desc parameter of
-						-- nvim_buf_set_keymap) which plugins like which-key display
-						["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-						-- You can also use captures from other query groups like `locals.scm`
-						["as"] = { query = "@local.scope", query_group = "locals", desc = "Select language scope" },
-					},
-					-- You can choose the select mode (default is charwise 'v')
-					--
-					-- Can also be a function which gets passed a table with the keys
-					-- * query_string: eg '@function.inner'
-					-- * method: eg 'v' or 'o'
-					-- and should return the mode ('v', 'V', or '<c-v>') or a table
-					-- mapping query_strings to modes.
-					selection_modes = {
-						["@parameter.outer"] = "v", -- charwise
-						["@function.outer"] = "V", -- linewise
-						["@class.outer"] = "<c-v>", -- blockwise
-					},
-					-- If you set this to `true` (default is `false`) then any textobject is
-					-- extended to include preceding or succeeding whitespace. Succeeding
-					-- whitespace has priority in order to act similarly to eg the built-in
-					-- `ap`.
-					--
-					-- Can also be a function which gets passed a table with the keys
-					-- * query_string: eg '@function.inner'
-					-- * selection_mode: eg 'v'
-					-- and should return true or false
-					include_surrounding_whitespace = true,
-				},
-				swap = {
-					enable = true,
-					swap_next = {
-						["<leader>a"] = { query = "@parameter.inner", desc = "Swap with next parameter" },
-					},
-					swap_previous = {
-						["<leader>A"] = "@parameter.inner",
-					},
-				},
-				move = {
-					enable = true,
-					set_jumps = true, -- whether to set jumps in the jumplist
-					goto_next_start = {
-						["]m"] = "@function.outer",
-						["]]"] = { query = "@class.outer", desc = "Next class start" },
-						--
-						-- You can use regex matching (i.e. lua pattern) and/or pass a list in a "query" key to group multiple queries.
-						["]o"] = "@loop.*",
-						-- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
-						--
-						-- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
-						-- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
-						["]s"] = { query = "@local.scope", query_group = "locals", desc = "Next scope" },
-						["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
-					},
-					goto_next_end = {
-						["]M"] = "@function.outer",
-						["]["] = "@class.outer",
-					},
-					goto_previous_start = {
-						["[m"] = "@function.outer",
-						["[["] = "@class.outer",
-					},
-					goto_previous_end = {
-						["[M"] = "@function.outer",
-						["[]"] = "@class.outer",
-					},
-					-- Below will go to either the start or the end, whichever is closer.
-					-- Use if you want more granular movements
-					-- Make it even more gradual by adding multiple queries and regex.
-					goto_next = {
-						["]d"] = "@conditional.outer",
-						["]p"] = "@property",
-					},
-					goto_previous = {
-						["[d"] = "@conditional.outer",
-						["[p"] = "@property",
-					},
-				},
-			},
-		})
-	end,
+    -- Select textobjects (x/o modes)
+    local function sel(keys, capture, group, desc)
+      vim.keymap.set(
+        { "x", "o" },
+        keys,
+        function() select.select_textobject(capture, group or "textobjects") end,
+        { desc = desc }
+      )
+    end
+
+    sel("af", "@function.outer", nil, "Select outer function")
+    sel("if", "@function.inner", nil, "Select inner function")
+    sel("ac", "@class.outer", nil, "Select outer class")
+    sel("ic", "@class.inner", nil, "Select inner class")
+    sel("ao", "@comment.outer", nil, "Select outer comment")
+    sel("as", "@local.scope", "locals", "Select language scope")
+
+    -- Swap (n mode)
+    vim.keymap.set(
+      "n",
+      "<leader>a",
+      function() swap.swap_next "@parameter.inner" end,
+      { desc = "Swap with next parameter" }
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>A",
+      function() swap.swap_previous "@parameter.outer" end,
+      { desc = "Swap with previous parameter" }
+    )
+
+    -- Move (n/x/o modes)
+    local function mv(keys, fn, capture, group, desc)
+      vim.keymap.set(
+        { "n", "x", "o" },
+        keys,
+        function() fn(capture, group or "textobjects") end,
+        { desc = desc }
+      )
+    end
+
+    mv("]m", move.goto_next_start, "@function.outer", nil, "Next function start")
+    mv("]]", move.goto_next_start, "@class.outer", nil, "Next class start")
+    mv("]o", move.goto_next_start, { "@loop.inner", "@loop.outer" }, nil, "Next loop start")
+    mv("]s", move.goto_next_start, "@local.scope", "locals", "Next scope")
+    mv("]z", move.goto_next_start, "@fold", "folds", "Next fold")
+    mv("]M", move.goto_next_end, "@function.outer", nil, "Next function end")
+    mv("][", move.goto_next_end, "@class.outer", nil, "Next class end")
+
+    mv("[m", move.goto_previous_start, "@function.outer", nil, "Prev function start")
+    mv("[[", move.goto_previous_start, "@class.outer", nil, "Prev class start")
+    mv("[M", move.goto_previous_end, "@function.outer", nil, "Prev function end")
+    mv("[]", move.goto_previous_end, "@class.outer", nil, "Prev class end")
+
+    mv("]d", move.goto_next, "@conditional.outer", nil, "Next conditional")
+    mv("[d", move.goto_previous, "@conditional.outer", nil, "Prev conditional")
+    mv("]p", move.goto_next, "@property", nil, "Next property")
+    mv("[p", move.goto_previous, "@property", nil, "Prev property")
+  end,
 }

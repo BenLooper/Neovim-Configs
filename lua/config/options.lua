@@ -17,9 +17,7 @@ vim.o.showmode = false
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.o.clipboard = 'unnamedplus'
-end)
+vim.schedule(function() vim.o.clipboard = "unnamedplus" end)
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -32,7 +30,7 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- Keep signcolumn on by default
-vim.o.signcolumn = 'yes'
+vim.o.signcolumn = "yes"
 
 -- Decrease update time
 vim.o.updatetime = 250
@@ -53,10 +51,10 @@ vim.o.splitbelow = true
 --   See `:help lua-options`
 --   and `:help lua-options-guide`
 vim.o.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 -- Preview substitutions live, as you type!
-vim.o.inccommand = 'split'
+vim.o.inccommand = "split"
 
 -- Show which line your cursor is on
 vim.o.cursorline = true
@@ -77,3 +75,15 @@ vim.opt.softtabstop = 4 -- How many spaces are applied when pressing Tab
 vim.opt.smarttab = true
 vim.opt.smartindent = true
 vim.opt.autoindent = true -- Keep identation from previous line
+
+-- Colorcolumn: kanagawa already colors it (bg_p1), we just enable it.
+-- Line-length guide aids readability when reviewing long agent-generated lines.
+vim.o.colorcolumn = "100"
+
+-- Native 0.12 completion (works alongside blink.cmp, not instead of it).
+vim.o.autocomplete = true
+
+-- Diffs: 0.12 already defaults to `internal,filler,closeoff,
+-- indent-heuristic,inline:char,linematch:40`. We just bump linematch
+-- to 60 for cleaner alignment of larger hunks.
+vim.opt.diffopt:append "linematch:60"

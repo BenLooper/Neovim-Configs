@@ -111,8 +111,7 @@ ascii_art.hauntedHouse = {
   "  /  \\  /  .-' `--.  / .' /  `-.' ======.' /",
 }
 
-ascii_art.hobbitHole = 
-{
+ascii_art.hobbitHole = {
   "                 . .:.:.:.:. .:\\     /:. .:.:.:.:. ,",
   "           .-._  `..:.:. . .:.:`- -':.:. . .:.:.,'  _.-.",
   "        .:.:.`-._`-._..-''_...---..._``-.._.-'_.-'.:.:.",
@@ -142,8 +141,7 @@ ascii_art.hobbitHole =
   ",' ,'  '   /   /   /   /   //                   \\\\   \\   \\   \\   \\  ` `.SSt",
 }
 
-ascii_art.minasTirith = 
-{
+ascii_art.minasTirith = {
   "  |||            _.'   _      _.-. |        | |--",
   " \\|||         _.'    -    _.-'  _|-|       -| |__",
   "  ||;-,    _.'   '-  _.-'' _.-''|  |-'      | `._",
@@ -174,8 +172,7 @@ ascii_art.minasTirith =
   " / | |/                        \\\\    \\|| |' SSt",
 }
 
-ascii_art.wyrm = 
-{
+ascii_art.wyrm = {
   "                        ,===:'.,            `-._                           ",
   "Art by                       `:.`---.__         `-._                       ",
   " John VanderZwaag              `:.     `--.         `.                     ",
@@ -191,8 +188,7 @@ ascii_art.wyrm =
   "                            `.___,'   `.__,'   `.__,'  VZ                  ",
 }
 
-ascii_art.redDragon = 
-{
+ascii_art.redDragon = {
   "          /                            )",
   "          (                             |\\",
   "         /|                              \\\\",
@@ -232,8 +228,7 @@ ascii_art.redDragon =
   "                               '.__)'",
 }
 
-ascii_art.spookyCat = 
-{
+ascii_art.spookyCat = {
   "                                 .                                      ",
   "                            ,''`.             _                        ",
   "                       ,.,'''  '`--- ._,,,'|                           ",

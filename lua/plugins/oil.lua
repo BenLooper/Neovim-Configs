@@ -1,5 +1,5 @@
 return {
-  'stevearc/oil.nvim',
+  "stevearc/oil.nvim",
   ---@module 'oil'
   ---@type oil.SetupOpts
   opts = {
@@ -28,14 +28,14 @@ return {
       -- Padding around the floating window
       padding = 3,
       -- max_width and max_height can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
-      max_width = .75,
-      max_height = .75,
+      max_width = 0.75,
+      max_height = 0.75,
       border = true,
       -- optionally override the oil buffers window title with custom function: fun(winid: integer): string
       get_win_title = nil,
       -- preview_split: Split direction: "auto", "left", "right", "above", "below".
       preview_split = "right",
-    }
+    },
   },
   -- Optional dependencies
   dependencies = { { "nvim-mini/mini.icons", opts = {} } },

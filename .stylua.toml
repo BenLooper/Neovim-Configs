@@ -1,0 +1,8 @@
+# stylua config — matches the formatting conform.lua already enforces on save.
+# Running `stylua lua/` normalizes the whole config to one consistent style.
+column_width = 100
+indent_type = "Spaces"
+indent_width = 2
+quote_style = "ForceDouble"
+call_parentheses = "NoSingleString"
+collapse_simple_statement = "FunctionOnly"

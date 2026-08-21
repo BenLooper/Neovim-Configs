@@ -1,5 +1,3 @@
 {
-    "diagnostics.globals": [
-        "local"
-    ]
+  "diagnostics.globals": ["vim"]
 }
