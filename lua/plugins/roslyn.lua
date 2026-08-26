@@ -1,11 +1,16 @@
+-- C# / .NET LSP via roslyn.nvim.
+--
+-- PROFILE-AWARE: only loads when `dotnet` is on PATH (home-manager
+-- profiles control this — work ships dotnet-sdk_10, personal doesn't).
+-- Without this guard the plugin would spawn a server that can never run.
+if vim.fn.executable "dotnet" == 0 then
+  return {}
+end
+
 return {
   "seblyng/roslyn.nvim",
-  -- C# / .NET LSP. Wraps the Microsoft Roslyn language server that powers
-  -- the VS Code C# extension. Supports editing, navigation, inlay hints,
-  -- and Razor/Blazor via co-hosting (supersedes rzls.nvim).
-  -- Requires Neovim >= 0.12 (we're on 0.12.4) + .NET SDK + roslyn server.
-  -- Install the server via Mason (`:MasonInstall roslyn-language-server`)
-  -- or as a dotnet tool (see roslyn.nvim README for the Azure DevOps feed).
+  -- Wraps the Microsoft Roslyn language server that powers the VS Code C#
+  -- extension. Editing/navigation/inlay hints/Razor via co-hosting.
   lazy = true,
   ft = { "cs", "razor", "cshtml" },
   ---@module 'roslyn.config'
@@ -15,9 +20,27 @@ return {
     filewatching = "auto",
   },
   init = function()
-    -- Per-server settings: inlay hints + code lens. These take effect
-    -- when roslyn attaches. Requires the global inlay-hint enable in
-    -- lsp.lua's LspAttach autocommand (which we have).
+    -- Launch the server DLL through the dotnet binary instead of Mason's
+    -- prebuilt apphost (`bin/roslyn-language-server`). The apphost is
+    -- Ubuntu-linked and dlopens libhostfxr from our Nix SDK, which needs a
+    -- newer glibc than the system loader provides -> instant SIGQUIT.
+    -- Running under Nix's dotnet keeps loader/libc/icu consistent.
+    -- This merges over roslyn.nvim's default cmd in lsp/roslyn.lua.
+    local dll = vim.fs.joinpath(
+      vim.fn.stdpath "data",
+      "mason",
+      "packages",
+      "roslyn",
+      "libexec",
+      "Microsoft.CodeAnalysis.LanguageServer.dll"
+    )
+    vim.lsp.config("roslyn", {
+      cmd = { "dotnet", dll, "--stdio" },
+    })
+
+    -- Per-server settings: inlay hints + code lens + organize on format.
+    -- Requires the global inlay-hint enable in lsp.lua's LspAttach
+    -- autocommand to actually render.
     vim.lsp.config("roslyn", {
       settings = {
         ["csharp|inlay_hints"] = {

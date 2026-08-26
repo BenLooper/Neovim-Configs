@@ -76,12 +76,9 @@ vim.opt.smarttab = true
 vim.opt.smartindent = true
 vim.opt.autoindent = true -- Keep identation from previous line
 
--- Colorcolumn: kanagawa already colors it (bg_p1), we just enable it.
+-- Colorcolumn: themed dim background, we just enable it.
 -- Line-length guide aids readability when reviewing long agent-generated lines.
 vim.o.colorcolumn = "100"
-
--- Native 0.12 completion (works alongside blink.cmp, not instead of it).
-vim.o.autocomplete = true
 
 -- Diffs: 0.12 already defaults to `internal,filler,closeoff,
 -- indent-heuristic,inline:char,linematch:40`. We just bump linematch

@@ -273,7 +273,9 @@ return {
       -- Python
       pyright = {},
 
-      -- Nix: nixd supports inlay hints; nil does not.
+      -- Nix: nixd supports inlay hints; nil does not. Binary comes from
+      -- Nix packages (not Mason) — server entry kept so it activates once
+      -- nixd is on PATH.
       nixd = {},
 
       -- JSON / YAML schema-aware validation (consumes schemastore.nvim).
@@ -298,10 +300,32 @@ return {
       cssls = {},
     }
 
-    -- C# / .NET: roslyn.nvim is configured in its own plugin spec
-    -- (lua/plugins/roslyn.lua) and registers the "roslyn" server.
-    -- It is NOT in this table because it needs custom solution-detection
-    -- logic that roslyn.nvim provides.
+    -- ============================================================
+    -- PROFILE-AWARE SERVER FILTERING
+    -- ============================================================
+    -- home-manager profiles control which language toolchains are on PATH
+    -- (work ships dotnet, personal doesn't, etc). Each server that needs a
+    -- runtime declares it here; servers without their toolchain on PATH
+    -- are never configured or Mason-installed. Servers ABSENT from this
+    -- map (lua_ls, rust_analyzer, marksman, stylua, ruff, prettierd,
+    -- nixfmt) are standalone Mason binaries that work in every profile.
+    local server_runtimes = {
+      gopls = "go",
+      bashls = "npm", -- all npm-based servers: Mason installs them by
+      vtsls = "npm", -- shelling out to npm, and they need node to run
+      angularls = "npm",
+      pyright = "npm",
+      jsonls = "npm",
+      yamlls = "npm",
+      html = "npm",
+      cssls = "npm",
+      nixd = "nixd", -- binary comes from Nix packages, not Mason
+    }
+
+    local enabled_servers = vim.tbl_filter(function(name)
+      local bin = server_runtimes[name]
+      return not bin or vim.fn.executable(bin) == 1
+    end, vim.tbl_keys(servers))
 
     -- Ensure the servers and tools above are installed
     --
@@ -316,24 +340,41 @@ return {
     --
     -- You can add other tools here that you want Mason to install
     -- for you, so that they are available from within Neovim.
-    local ensure_installed = vim.tbl_keys(servers or {})
+    local ensure_installed = vim.deepcopy(enabled_servers)
+    -- `nixd` must NEVER reach Mason (not a Mason package — its lookup
+    -- error aborts the whole refresh); it comes from Nix packages.
+    ensure_installed = vim.tbl_filter(function(name) return name ~= "nixd" end, ensure_installed)
     vim.list_extend(ensure_installed, {
       "stylua", -- Lua
       "ruff", -- Python (ruff_organize_imports + ruff_format)
-      "goimports", -- Go
-      "gofumpt", -- Go
       "prettierd", -- JS/TS/JSON/HTML/CSS/YAML/Markdown
       "nixfmt", -- Nix
-      "csharpier", -- C#
-      "roslyn-language-server", -- C# LSP (from Crashdummyy custom registry)
     })
+    if vim.fn.executable "go" == 1 then
+      -- Compiled from source by Mason via `go install` — needs toolchain.
+      vim.list_extend(ensure_installed, { "goimports", "gofumpt" })
+    end
+    if vim.fn.executable "dotnet" == 1 then
+      -- C# stack: only meaningful with the .NET SDK on PATH.
+      -- `roslyn` comes from the Crashdummyy custom registry.
+      vim.list_extend(ensure_installed, { "csharpier", "roslyn" })
+    end
     require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
     require("mason-lspconfig").setup({
       ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
       automatic_installation = false,
+      -- nvim-lspconfig now ships a `stylua` server config; without this
+      -- exclusion it attaches as an LSP to lua buffers alongside conform's
+      -- stylua — three formatting paths. conform stays the sole formatter.
+      automatic_enable = { exclude = { "stylua" } },
       handlers = {
         function(server_name)
+          -- Skip servers whose toolchain isn't in this profile — otherwise
+          -- the default handler would set up an empty config for them.
+          if not vim.list_contains(enabled_servers, server_name) then
+            return
+          end
           local server = servers[server_name] or {}
           -- This handles overriding only values explicitly passed
           -- by the server configuration above. Useful when disabling
