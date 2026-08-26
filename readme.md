@@ -101,7 +101,7 @@ surface:
 | code-preview.nvim | Agent edits appear as native diffs BEFORE hitting disk; accept/reject in the agent CLI. Hooks install **per project** — run once in each repo where you use agents: `:CodePreviewInstallClaudeCodeHooks` / `:CodePreviewInstallOpenCodeHooks` (already done for ~/dotfiles) |
 | hunk-review.nvim (`:HunkReview`) | Batch-review the working diff, comment on hunks, export feedback back to the agent |
 | diffview (`:DiffviewOpen`, `:DiffviewOpen main...HEAD`) | Branch/file-history review; `enhanced_diff_hl` syntax-highlights both sides |
-| sidekick.nvim | Prompt library + NES; tmux mux backend (`create = "split"` → real tmux pane). `<leader>aa` jumps into the agent pane (starts it if none), `<leader>ax` kills it, `<C-.>` focuses, `<Tab>` accepts suggestions when present. From inside the agent: exit the TUI or `C-a x` to close |
+| sidekick.nvim | Prompt library + NES; tmux mux backend (`create = "split"` → real tmux pane — tmux hosts only; on Windows/bare terminals it falls back to the embedded terminal). `<leader>aa` jumps into the agent pane (starts it if none), `<leader>ax` kills it, `<C-.>` focuses, `<Tab>` accepts suggestions when present. From inside the agent: exit the TUI or `C-a x` to close |
 
 Completion is blink.cmp; formatting is conform (`<leader>cf`, also on save).
 Fuzzy finding is fzf-lua — `<leader>ff` files, `<leader>fg` grep,

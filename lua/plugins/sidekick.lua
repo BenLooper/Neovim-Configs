@@ -12,6 +12,15 @@ local function agent_pane()
   end
 end
 
+-- The tmux mux only works when nvim actually runs inside tmux and the
+-- tmux binary is on PATH (sidekick registers its tmux backend only when
+-- `executable("tmux")` passes — otherwise "unknown backend: tmux" — and
+-- create="split" needs a live server to split). On native Windows or a
+-- bare terminal we leave mux disabled: sidekick then uses its default
+-- embedded terminal, agent_pane() returns nil, and every keymap below
+-- falls back to sidekick's own behaviour.
+local in_tmux = vim.env.TMUX ~= nil and vim.fn.executable("tmux") == 1
+
 return {
   "folke/sidekick.nvim",
   -- Prompt library + Copilot LSP Next Edit Suggestions (NES). The
@@ -22,7 +31,7 @@ return {
   event = "VeryLazy",
   opts = {
     cli = {
-      mux = {
+      mux = in_tmux and {
         backend = "tmux",
         enabled = true,
         -- Default is "terminal": a nested tmux session inside an embedded
@@ -31,7 +40,7 @@ return {
         -- agent a genuine tmux pane.
         create = "split",
         split = { size = 0.4 },
-      },
+      } or nil,
     },
   },
   keys = {
@@ -80,14 +89,16 @@ return {
     },
     {
       -- Mirrors tmux's x=kill-pane: closes the agent pane (and its process)
-      -- without leaving nvim. sidekick's own close() only detaches.
+      -- without leaving nvim. sidekick's own close() only detaches external
+      -- panes, but for embedded sessions (Windows / no tmux) it's the right
+      -- hammer — so fall back to it there.
       "<leader>ax",
       function()
         local pane = agent_pane()
         if pane then
           vim.system({ "tmux", "kill-pane", "-t", pane })
         else
-          vim.notify("sidekick: no external agent pane running", vim.log.levels.WARN)
+          require("sidekick.cli").close()
         end
       end,
       mode = { "n", "t" },
