@@ -101,7 +101,7 @@ surface:
 | code-preview.nvim | Agent edits appear as native diffs BEFORE hitting disk; accept/reject in the agent CLI. Hooks install **per project** — run once in each repo where you use agents: `:CodePreviewInstallClaudeCodeHooks` / `:CodePreviewInstallOpenCodeHooks` (already done for ~/dotfiles) |
 | hunk-review.nvim (`:HunkReview`) | Batch-review the working diff, comment on hunks, export feedback back to the agent |
 | diffview (`:DiffviewOpen`, `:DiffviewOpen main...HEAD`) | Branch/file-history review; `enhanced_diff_hl` syntax-highlights both sides |
-| sidekick.nvim | Prompt library + NES; tmux mux backend. `<leader>aa` opens/toggles the agent CLI pane, `<C-.>` focuses it once open, `<Tab>` accepts suggestions when present |
+| sidekick.nvim | Prompt library + NES; tmux mux backend (`create = "split"` → real tmux pane). `<leader>aa` jumps into the agent pane (starts it if none), `<leader>ax` kills it, `<C-.>` focuses, `<Tab>` accepts suggestions when present. From inside the agent: exit the TUI or `C-a x` to close |
 
 Completion is blink.cmp; formatting is conform (`<leader>cf`, also on save).
 Fuzzy finding is fzf-lua — `<leader>ff` files, `<leader>fg` grep,
@@ -132,7 +132,7 @@ TEXT OBJECTS af if function · ac ic class · ao comment · as scope
 UI           <leader>uT theme dark/light · <leader>ux sticky context · <leader>; breadcrumbs
              <leader>th inlay hints · <leader>o outline · <leader>tt terminal
 MISC         <Esc> clear search · <leader>s scratchpad · <leader>ps push to scratchpad
-             <leader>qs ql restore session · <leader>aa toggle agent pane · <C-.> focus agent pane
+             <leader>qs ql restore session · <leader>aa jump to agent pane · <leader>ax kill agent pane
 ```
 
 ## Nix contract
