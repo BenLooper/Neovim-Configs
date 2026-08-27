@@ -65,6 +65,7 @@ sticky-context-as-chrome, bold inline-diff text, italic end-of-line hints.
 filtered through `vim.fn.executable()`: a server without its runtime on PATH
 is never configured and never Mason-installed. Standalone-binary servers
 (lua_ls, rust_analyzer, marksman, ruff…) need no runtime and stay always-on.
+PowerShell uses `powershell_es` when `pwsh` is available.
 
 This is deliberate: your home-manager profiles control PATH, so **switching
 profiles switches your LSP set** with zero nvim changes. Work has dotnet → C#

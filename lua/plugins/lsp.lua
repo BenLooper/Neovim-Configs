@@ -273,6 +273,9 @@ return {
       -- Python
       pyright = {},
 
+      -- PowerShell
+      powershell_es = {},
+
       -- Nix: nixd supports inlay hints; nil does not. Binary comes from
       -- Nix packages (not Mason) — server entry kept so it activates once
       -- nixd is on PATH.
@@ -320,6 +323,7 @@ return {
       html = "npm",
       cssls = "npm",
       nixd = "nixd", -- binary comes from Nix packages, not Mason
+      powershell_es = "pwsh",
     }
 
     local enabled_servers = vim.tbl_filter(function(name)

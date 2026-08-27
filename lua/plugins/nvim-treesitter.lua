@@ -32,6 +32,7 @@ return {
       "nix",
       "c_sharp",
       "angular",
+      "powershell",
     }
 
     -- Install missing parsers. Wrapped in pcall because the `tree-sitter`
